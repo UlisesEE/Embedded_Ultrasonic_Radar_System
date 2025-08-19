@@ -1,0 +1,123 @@
+import processing.serial.*;
+
+Serial myPort; // global
+
+String rawData = "";
+float distanceInPixels;
+int angle;
+int distance;
+boolean showRedline = false;
+PFont myFont;
+
+void setup()
+{
+  size(1080, 720);
+  smooth();
+  myPort = new Serial(this, "/dev/cu.usbmodem11301", 9600);
+  myFont = createFont("Arial", 30);
+}
+
+void draw()
+{
+  if (myPort.available() > 0) {
+    String val = myPort.readStringUntil('\n');
+    println(val);
+  }
+   fill(0, 4);
+   rect(0, 0, width, height - 50);
+  drawRadar();  
+  drawline();
+  drawObject();
+  fill(0,0,0);
+  rect(0, height -50, width, 50);
+  drawText();
+}
+
+void serialEvent(Serial p) {
+  String rawData = p.readStringUntil('\n');
+  if (rawData != null) {
+    rawData = trim(rawData);
+    String[] parts = split(rawData, ',');
+    if (parts.length == 2) {
+      angle = int(parts[0]);
+      distance = int(parts[1]);
+
+      if (distance < 40) {
+        showRedline = true;
+        distanceInPixels = map(distance, 0, 40, height * 0.025, height * 0.75);
+      } else {
+        showRedline = false;
+      }
+    }
+  }
+}
+
+
+void drawRadar()
+{
+  pushMatrix();
+  translate(width / 2, height - 50);
+  noFill();
+  strokeWeight(1);
+  stroke(100, 250, 25);
+  int numberOfCircles = 4;
+  float radius;
+  for(int i = 0; i < numberOfCircles; i++)
+  {
+    radius = (width - width *(i * 0.25) - 50) / 2;
+    arc(0, 0, radius * 2, radius * 2, PI, TWO_PI);
+  }
+  popMatrix();
+}
+
+void drawline()
+{
+  pushMatrix();
+  strokeWeight(10);
+  float centerX= width/2;
+  float centerY = height - height * 0.075;
+  
+  if(showRedline) {
+    stroke(50, 250, 50); // Green line Color
+    float linelength = height * 0.75;
+    float x2 = centerX + linelength * cos(radians(angle));
+    float y2 = centerY - linelength * sin(radians(angle));
+    line(centerX, centerY, x2, y2);
+  } else {
+    stroke(255, 0, 0); // Red line color
+    line(centerX, centerY, centerX + distanceInPixels * cos(radians(angle)), centerY - distanceInPixels * sin(radians(angle)));
+  }
+  
+  popMatrix();
+}
+
+
+void drawObject()
+{
+  pushMatrix();
+  translate(width / 2, height - 50);
+  strokeWeight(10);
+  stroke(255, 0, 0);
+  
+  popMatrix();
+}
+
+void drawText()
+{
+  pushStyle();
+  textSize(24);
+  fill(255);
+  if (!showRedline) 
+  {
+    text("Ulises", 10, height - 10);
+    text("OUT OF RANGE", width/4, height - 10);
+  } else
+  {
+    stroke(50, 250, 50);
+    text("Ulises", 10, height - 10);
+    text("IN RANGE", width / 4, height - 10);
+    text("Angle: " + angle + "°", width/2, height - 10);
+    text("Distance: " + distance + "cm", width/1.5, height - 10);
+  }
+  popStyle();
+}
