@@ -89,7 +89,10 @@ Integrate with wireless modules (Bluetooth/WiFi) for remote radar.
 
 
 
-https://github.com/user-attachments/assets/b3fc2631-bbad-4f7d-988c-64799133d72a
+
+
+
+https://github.com/user-attachments/assets/21b6236b-6659-4a07-b2e0-5fa04e314f9a
 
 
 
