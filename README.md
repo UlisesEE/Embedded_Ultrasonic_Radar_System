@@ -79,3 +79,6 @@ Store distance data and generate a 2D map.
 
 Integrate with wireless modules (Bluetooth/WiFi) for remote radar.
 
+![IMG_4914](https://github.com/user-attachments/assets/d9bf78c1-c573-49bb-81d0-ae1d8542037d)
+
+
